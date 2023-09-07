@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: org_header_for_blog
+# key: org_header_for_blog
+# --
+
+#+AUTHOR: holy
+#+EMAIL: hoyoul.park@gmail.com
+#+DATE: $1
+#+DESCRIPTION: $2
+#+HUGO_DRAFT: true

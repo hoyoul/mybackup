@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: bimportant
+# key: bimportant
+# --
+ #+begin_important
+ $1
+ #+end_important

@@ -1,0 +1,16 @@
+# 첫 번째 계정
+Host github.com-hoyoul
+    HostName github.com
+    User hoyoul
+    IdentityFile ~/.ssh/id_hoyoul
+
+# 두 번째 계정
+Host github.com-holy2frege
+    HostName github.com
+    User holy2frege
+    IdentityFile ~/.ssh/id_holy2frege
+# 세번째 계정
+Host github.com-holytofrege
+    HostName github.com
+    User holytofrege
+    IdentityFile ~/.ssh/id_holytofrege

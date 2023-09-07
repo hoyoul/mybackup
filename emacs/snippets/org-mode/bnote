@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: bnote
+# key: bnote
+# --
+
+#+begin_note
+ $1
+#+end_note

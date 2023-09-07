@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: latex-template2
+# key: latex-template2
+# --
+#+TITLE: 자기 소개서
+#+AUTHOR: 박 호열
+#+OPTIONS: toc:nil num:nil \n:t
+#+LATEX_HEADER: \usepackage{kotex}
+#+latex_header: \usepackage{setspace}
+#+latex_header: \onehalfspacing

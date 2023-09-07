@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: front_matter
+# key: front_matter
+# --
+
+#+hugo_base_dir: ../..
+#+hugo_section: posts/$1
+#+draft = true
+#+title = $2
+#+date = $3

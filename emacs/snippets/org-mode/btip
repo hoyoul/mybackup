@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: btip
+# key: btip
+# --
+ #+begin_tip
+ $1
+ #+end_tip

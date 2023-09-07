@@ -1,0 +1,35 @@
+;; 한국어 Lorem Ipsum 패키지
+
+(defun korean-lorem-ipsum-sentence ()
+  "Generate a Korean Lorem Ipsum sentence."
+  (let* ((words '("이" "것" "은" "한국어" "Lorem" "Ipsum" "박호열" "이" "만든" "예시" "코드" "입니다"))
+         (sentence-length (+ 1 (random 10)))
+         (korean-lorem-text ""))
+    (dotimes (_ sentence-length)
+      (setq korean-lorem-text (concat korean-lorem-text (nth (random (length words)) words) " ")))
+    (setq korean-lorem-text (string-trim-right korean-lorem-text))
+    (concat korean-lorem-text "입니다.")))
+
+(defun korean-lorem-ipsum-paragraph ()
+  "Generate a Korean Lorem Ipsum paragraph."
+  (let* ((paragraph-length (+ 3 (random 5)))
+         (korean-lorem-text ""))
+    (dotimes (_ paragraph-length)
+      (setq korean-lorem-text (concat korean-lorem-text (korean-lorem-ipsum-sentence) " ")))
+    (concat korean-lorem-text "\n")))
+
+(defun korean-lorem-ipsum-list (count)
+  "Generate a list of Korean Lorem Ipsum sentences with COUNT items."
+  (let ((korean-lorem-list ""))
+    (dotimes (_ count)
+      (setq korean-lorem-list (concat korean-lorem-list "- " (korean-lorem-ipsum-sentence) "\n")))
+    korean-lorem-list))
+
+;; Example usage
+(defun korean-lorem-ipsum-example ()
+  "Print an example of Korean Lorem Ipsum."
+  (interactive)
+  (message "Korean Lorem Ipsum Sentence:\n%s\n\nKorean Lorem Ipsum Paragraph:\n%s\n\nKorean Lorem Ipsum List:\n%s"
+           (korean-lorem-ipsum-sentence)
+           (korean-lorem-ipsum-paragraph)
+           (korean-lorem-ipsum-list 3)))

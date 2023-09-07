@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: universial
+# key: universial
+# --
+#+TITLE: $1
+#+AUTHOR: Holy Frege
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS:  toc:t  d:nil ^:nil num:nil
+#+REVEAL_INIT_OPTIONS: transition: 'linear'
+#+REVEAL_THEME: beige
+#+REVEAL_TITLE_SLIDE: <h2>%t <br> <h4>%a(%e)
+#+REVEAL_ROOT:  https://cdn.jsdelivr.net/npm/reveal.js

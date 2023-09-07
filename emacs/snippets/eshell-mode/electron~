@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: electron
+# key: electron
+# --
+npx-create-electron app $1

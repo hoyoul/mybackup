@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: org_css
+# key: org_css
+# --
+
+#+HTML_HEAD: <link rel="stylesheet" href="https://sandyuraz.com/styles/org.min.css">

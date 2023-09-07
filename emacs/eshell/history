@@ -1,0 +1,2 @@
+echo  $SHELL
+echo  $PATH

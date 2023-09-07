@@ -1,0 +1,4 @@
+# key: electron
+# name: electron
+# --
+npx create-electron-app $1

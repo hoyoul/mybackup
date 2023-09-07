@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: org_header
+# key: org_header
+# --
+
+# ------------------------------------------------------------------------------
+#+TITLE:     
+#+SUBTITLE:  Holy Frege - June 2021
+#+AUTHOR:    Holy Frege
+#+EMAIL:     holy_frege@fastmail.com
+#+LANGUAGE:  en
+#+STARTUP:   content showstars indent inlineimages hideblocks
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="GTD.css" />
+#+OPTIONS:   toc:2 html-scripts:nil num:nil html-postamble:nil html-style:nil ^:nil
+# ------------------------------------------------------------------------------

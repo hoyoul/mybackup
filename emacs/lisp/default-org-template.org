@@ -1,0 +1,4 @@
+#+DATE:
+#+TITLE:
+#+AUTHOR: "Holy Frege"
+#+EMAIL: 

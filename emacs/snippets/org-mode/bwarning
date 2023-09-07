@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: bwarning
+# key: bwarning
+# --
+ #+begin_warning
+ $1
+ #+end_warning

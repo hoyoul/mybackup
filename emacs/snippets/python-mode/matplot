@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: matplot
+# key: matplot
+# --
+import matplotlib
+matplotlib.use('MacOSX')

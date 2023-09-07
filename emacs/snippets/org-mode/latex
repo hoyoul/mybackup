@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: latex
+# key: latex
+# --
+#+TITLE: 
+#+AUTHOR: Holy frege
+#+OPTIONS: toc:nil num:nil
+#+LATEX_CMD: xelatex
+#+LATEX_CLASS: oblivoir
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage{kotex}

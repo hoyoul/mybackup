@@ -1,0 +1,1067 @@
+# ------------------------------------------------------------------------------
+#+TITLE: Emacs From Scratch Configuration    
+#+AUTHOR:    Holy Frege
+#+EMAIL:     holy_frege@fastmail.com
+#+STARTUP:   content showstars indent inlineimages hideblocks
+#+OPTIONS:   toc:2 html-scripts:nil num:nil html-postamble:nil html-style:nil ^:nil
+#+PROPERTY: header-args :emacs-lisp :tangle ./init.el :mkdirp yes
+# ------------------------------------------------------------------------------
+* basic necessary settings
+** meta key settings
+ #+begin_src emacs-lisp
+   (setq ns-command-modifier 'meta)
+   
+ #+end_src
+** package setting
+ #+begin_src emacs-lisp
+     ;; Initialize package sources
+   (require 'package)
+
+   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                            ("org" . "https://orgmode.org/elpa/")
+                            ("elpa" . "https://elpa.gnu.org/packages/")))
+
+   (package-initialize)
+   
+   (unless package-archive-contents
+     (package-refresh-contents))
+
+   ;; Initialize use-package on non-Linux platforms
+   (unless (package-installed-p 'use-package)
+     (package-install 'use-package))
+
+   (add-to-list 'load-path "/Users/fregeholy/.emacs.d/lisp/")
+
+   (require 'use-package)
+   (setq use-package-always-ensure t)
+
+   (use-package auto-package-update
+     :custom
+     (auto-package-update-interval 7)
+     (auto-package-update-prompt-before-update t)
+     (auto-package-update-hide-results t)
+     :config
+     (auto-package-update-maybe)
+     (auto-package-update-at-time "09:00"))
+
+   (use-package dash
+     :ensure t)
+   (eval-when-compile
+     (require 'cl))
+   (setq auto-save-default nil)
+   ;; 매번 버퍼 설정시 저장하는것을 disable
+   (setq-default buffer-save-without-query nil)
+ #+end_src  
+** exec-path
+ #+BEGIN_SRC emacs-lisp
+    (use-package exec-path-from-shell
+      :ensure t
+      )
+   (when (memq window-system '(mac ns x))
+     (setq exec-path-from-shell-arguments nil)
+     (exec-path-from-shell-initialize))
+    ;; for eshell
+    (defun eshell-mode-hook-func ()
+      (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env))
+      (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
+      (define-key eshell-mode-map (kbd "M-s") 'other-window-or-split))
+
+    (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
+
+    ;; (when (daemonp)
+    ;;   (exec-path-from-shell-initialize))
+ #+END_SRC
+** org and Org babel tangle
+#+begin_src emacs-lisp
+  (use-package org
+    :ensure t
+    :config
+    (setq org-startup-indented t)
+    (setq org-adapt-indentation t)
+    )
+
+  (defun holy/org-babel-tangle-config ()
+    (when (string-equal (buffer-file-name)
+			(expand-file-name "~/.emacs.d/emacs.org"))
+      (let ((org-confirm-babel-evaluate nil))
+	(org-babel-tangle))))
+
+  
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'holy/org-babel-tangle-config)))
+#+end_src
+** ls support dired
+#+BEGIN_SRC emacs-lisp
+(when (string= system-type "darwin")
+  (setq dired-use-ls-dired t
+        insert-directory-program "/usr/local/bin/gls"
+        dired-listing-switches "-aBhl --group-directories-first"))
+#+END_SRC
+* basic settings
+** "yes or no" to "y or n"
+ #+BEGIN_SRC emacs-lisp
+ (fset 'yes-or-no-p 'y-or-n-p)
+ #+END_SRC
+** emacs설정파일과 elfeed 설정파일 바로 보게 하는 함수(made it by myself)
+#+BEGIN_SRC emacs-lisp
+  (defun show-emacs-conf()
+    (interactive)
+    (find-file "~/.emacs.d/emacs.org"))
+
+
+
+** personal info
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Holy Frege")
+  (setq user-mail-address "hoyoul.park@gmail.com")
+#+END_SRC
+
+** default browser
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function 'browse-url-default-macosx-browser)
+#+END_SRC
+** paragraph setting
+#+BEGIN_SRC emacs-lisp
+(setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] ")
+#+END_SRC
+** default shell
+- counsel-projectile-find-file 수행시 fish shell사용할때 ascii error.
+#+BEGIN_SRC emacs-lisp
+(setq-default shell-file-name "/bin/zsh")
+#+END_SRC
+** org hyperlink when press enter
+#+BEGIN_SRC emacs-lisp
+(setq org-return-follows-link t)
+#+END_SRC
+** straight.el
+#+BEGIN_SRC emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+  (straight-use-package 'use-package)
+#+END_SRC
+** rg
+#+BEGIN_SRC emacs-lisp
+  (use-package rg
+  :ensure t)
+#+END_SRC
+* UI settings
+** Basic Appearance settings
+ #+begin_src emacs-lisp
+   (setq inhibit-startup-message t)     
+   (scroll-bar-mode -1)        ; Disable visible scrollbar
+   (tool-bar-mode -1)          ; Disable the toolbar
+   (tooltip-mode -1)           ; Disable tooltips
+   (set-fringe-mode 10)        ; Give some breathing room
+   (menu-bar-mode -1)          ; Disable the menu bar
+   ;; Set up the visible bell
+   (setq visible-bell t)
+ #+end_src
+
+** UI theme
+ #+BEGIN_SRC emacs-lisp
+
+     (use-package doom-themes
+       :init (load-theme 'doom-monokai-spectrum t)
+       )
+     (doom-themes-neotree-config)
+     ;; this isn't necessary, because 'simple is the default
+     (setq doom-neotree-file-icons 'simple)
+
+ #+END_SRC
+** modeline
+ #+BEGIN_SRC emacs-lisp
+   (use-package all-the-icons
+     :ensure t)
+
+   (use-package minions
+     :hook (doom-modeline-mode . minions-mode))
+
+   (use-package doom-modeline
+     :ensure t
+     :init (doom-modeline-mode 1)
+     :custom-face
+     (mode-line ((t (:height 0.85))))
+     (mode-line-inactive ((t (:height 0.85))))
+     :custom
+     (doom-modeline-major-mode-icon t)
+     (doom-modeline-project-detection 'auto)
+     (doom-modeline-buffer-file-name-style 'auto)
+     (doom-modeline-major-mode-color-icon t)
+     (doom-modeline-buffer-state-icon t)
+     (doom-modeline-minor-modes t)
+     (doom-modeline-indent-info t)
+     (doom-modeline-vcs-max-length 12)
+     (doom-modeline-persp-name t)
+     (doom-modeline-display-misc-in-all-mode-lines t)
+     (doom-modeline-env-version t)
+     (doom-modeline-display-default-persp-name nil)
+     )
+
+ #+END_SRC
+** font settings
+ #+BEGIN_SRC emacs-lisp
+
+   (defun holy-daemon/set-font-faces ()		
+     (message "Setting face on daemon")
+     (set-face-attribute 'region nil :background "#834")
+     (set-face-attribute 'default nil :font "Fira Code" :height 180)
+     (dolist (charset '(hangul symbol cjk-misc ))
+       (set-fontset-font (frame-parameter nil 'font) charset
+                         (font-spec :family "D2Coding")))
+     )
+   (defun holy-client/set-font-faces ()		
+     (message "Setting face on client")
+     (set-face-attribute 'region nil :background "#834")
+     (set-face-attribute 'default nil :font "Fira Code" :height 180)
+     )
+   ;; 추가 test
+      ;; (when (display-graphic-p) 
+      ;;   ;; Do any keybindings and theme setup here
+      ;;   (progn
+      ;;       (message "GUI!!")
+      ;;       (add-hook 'after-make-frame-functions
+      ;;           (lambda (frame)
+      ;;             (setq doom-modeline-icon t)
+      ;;             (with-selected-frame frame
+      ;;               (holy-daemon/set-font-faces))))
+      ;;   )
+      ;;   (holy-client/set-font-faces))
+
+   ;; daemon일때는 수행하지 않기 때문에 이것을 주석처리
+
+
+   (if (daemonp)
+       (progn
+         (message "Daemon")
+         (add-hook 'after-make-frame-functions
+                   (lambda (frame)
+                     (setq doom-modeline-icon t)
+                     (with-selected-frame frame
+                       (holy-daemon/set-font-faces)))))
+     (holy-client/set-font-faces))
+ #+END_SRC
+** Numbering Multiple window(ace window)
+ #+BEGIN_SRC emacs-lisp
+ (use-package ace-window
+ :ensure t
+ :init
+ (progn
+ (global-set-key [remap other-window] 'ace-window)
+ (custom-set-faces
+ '(aw-leading-char-face
+ ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+ ))
+ #+END_SRC
+
+** fill column
+ #+BEGIN_SRC emacs-lisp
+   (global-display-fill-column-indicator-mode 1)
+   (setq-default display-fill-column-indicator-column 119)
+ #+END_SRC
+
+** pretty-symbols-mode
+#+BEGIN_SRC emacs-lisp
+(use-package pretty-symbols
+  :ensure t)
+#+END_SRC
+
+* emacs utitlity settings 
+** lorem ipsum
+#+BEGIN_SRC emacs-lisp
+(use-package lorem-ipsum
+:config
+(lorem-ipsum-use-default-bindings))
+#+END_SRC
+
+** ivy and counsel
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)
+           :map ivy-switch-buffer-map
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+
+  (use-package counsel
+    :ensure t
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :config
+    (counsel-mode 1))
+
+  (use-package ivy-rich
+    :after counsel
+    :init
+    (ivy-rich-mode 1))
+
+#+END_SRC
+** neo tree
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+    :ensure t
+    :config
+      (setq neo-theme 'icons)
+    ) 
+
+  (global-set-key (kbd "C-c t") 'neotree-toggle)
+#+END_SRC
+
+** undo tree
+undo tree를 사용할때 ~undo-tree~라는 백업파일이 계속 생긴다. 별도의 폴더로 옮기자.
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :init
+    (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree-history")))
+     (global-undo-tree-mode))
+
+#+END_SRC
+
+** highlight parentheses
+#+BEGIN_SRC emacs-lisp
+  (use-package highlight-parentheses
+    :ensure t
+    :hook
+    ((prog-mode org-mode) . highlight-parentheses-mode)
+    :init
+    ;; (setq highlight-parentheses-colors '("green" "red" "red orange" ))
+    
+    (setq highlight-parentheses-colors '("#00e1ff" "red" "green" "blue" ))
+    :custom-face
+    ;; (highlight-parentheses-highlight ((t (:weight bold))))
+    )
+
+#+END_SRC
+
+** gnuplot
+#+BEGIN_SRC emacs-lisp
+(use-package gnuplot
+    :ensure t)
+#+END_SRC
+
+** plantuml
+#+BEGIN_SRC emacs-lisp
+  (use-package plantuml-mode
+    :ensure t
+    :config
+    (setq org-plantuml-jar-path (expand-file-name "/Users/fregeholy/.emacs.d/lisp/plantuml/plantuml.jar"))
+    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+    )
+#+END_SRC
+
+** graphviz-dot
+#+BEGIN_SRC emacs-lisp
+  (use-package graphviz-dot-mode
+    :ensure t
+    :init
+    ;; (require 'company-graphviz-dot)
+    :config
+    (setq graphviz-dot-indent-width 4))
+  ;; (use-package company-graphviz-dot
+  ;;   )
+#+END_SRC
+
+** company mode
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3)
+  (global-company-mode t))
+
+;; global activation of the unicode symbol completion
+(use-package company-math
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-math-symbols-unicode)
+  )
+;; (use-package company-graphviz-dot
+;;   )
+
+#+END_SRC
+
+** projectile
+#+BEGIN_SRC emacs-lisp
+  (if (daemonp)
+      (message "Daemon projectile")
+      (use-package projectile
+        :diminish projectile-mode
+        :config
+        (projectile-mode +1)
+        (setq projectile-enable-caching t)
+        (setq projectile-indexing-method 'alien)
+        :custom
+        ((projectile-completion-system 'ivy))
+        :bind-keymap
+        ("C-c p" . projectile-command-map)
+        :init
+        (setq projectile-switch-project-action #'projectile-dired)
+        (when (file-directory-p "/Users/fregeholy/Documents/Projects/")
+          (setq projectile-project-search-path '("/Users/fregeholy/Documents/Projects/"))))
+
+
+    (use-package counsel-projectile
+      :ensure t
+      :config
+      (counsel-projectile-mode))
+    )
+#+END_SRC
+
+** elfeed
+#+BEGIN_SRC emacs-lisp
+(setq elfeed-db-directory "~/Dropbox/shared/elfeeddb")
+(use-package elfeed
+  :ensure t
+  :bind (:map elfeed-search-mode-map
+	      ("q" . bjm/elfeed-save-db-and-bury)
+	      ("Q" . bjm/elfeed-save-db-and-bury)
+	      ("m" . elfeed-toggle-star)
+	      ("M" . elfeed-toggle-star)
+	      )
+  )
+(use-package elfeed-org
+  :ensure t
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/Dropbox/shared/elfeed.org")))
+
+#+END_SRC
+** yasnippets
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :init
+  (yas-global-mode 1)
+  ;; (add-to-list 'yas-snippet-dirs "~/Dropbox/WorkSpace/emacs/snippets")
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
+  :bind
+  ("C-c s" . yas-insert-snippet)
+  ("C-c n" . yas-new-snippet)
+  ("C-c v" . yas-visit-snippet-file))
+#+end_src
+
+** ibuffer
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+#+END_SRC
+
+** transpose window
+#+BEGIN_SRC emacs-lisp
+    (use-package buffer-move
+    :ensure t
+    :config
+    (global-set-key (kbd "<C-up>")     'buf-move-up)
+    (global-set-key (kbd "<C-down>")   'buf-move-down)
+    (global-set-key (kbd "<C-left>")   'buf-move-left)
+    (global-set-key (kbd "<C-right>")  'buf-move-right)
+    )
+#+END_SRC
+** magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+  (setq magit-branch-read-upstream-first 'fallback)
+
+  (use-package forge
+    :ensure t)
+
+#+END_SRC
+** gist
+#+BEGIN_SRC emacs-lisp
+  (use-package gist
+  :ensure t)
+#+END_SRC
+** perspective
+#+BEGIN_SRC emacs-lisp
+  (use-package perspective
+    :ensure t
+    :bind
+    (("C-x b" . persp-ivy-switch-buffer)         ; or use a nicer switcher, see below
+     ("C-x k" . persp-kill-buffer*))
+    :custom
+    (persp-mode-prefix-key (kbd "C-c M-p"))  ; pick your own prefix key here
+    :init
+    (persp-mode))
+#+END_SRC
+
+** ein(emacs ipython notebook)
+#+BEGIN_SRC emacs-lisp
+  (use-package ein
+    :ensure t
+    :config
+    (require 'ein-notebook))
+
+#+END_SRC
+** which key
+#+BEGIN_SRC emacs-lisp
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+#+END_SRC
+** gif-screen
+#+BEGIN_SRC emacs-lisp
+(use-package gif-screencast
+  :ensure t
+  :commands (gif-screencast-mode)
+  :config
+  (setq gif-screencast-scale-factor 2.0)
+  (add-hook 'after-init-hook #'gif-screencast-mode)
+  :bind ("C-x C-g" . 'gif-screencast-start-or-stop))
+
+(with-eval-after-load 'gif-screencast
+  (setq gif-screencast-args '("-x")) ;; To shut up the shutter sound of `screencapture' (see `gif-screencast-command').
+  (setq gif-screencast-cropping-program "mogrify") ;; Optional: Used to crop the capture to the Emacs frame.
+  (setq gif-screencast-capture-format "ppm")) ;; Optional: Required to crop captured images.
+
+
+#+END_SRC
+* Programming languages 
+** python
+#+BEGIN_SRC emacs-lisp
+  (setq python-shell-completion-native-enable nil)
+  
+  (use-package anaconda-mode
+    :ensure t
+    )
+
+  (use-package conda
+    :ensure t
+    :init
+    (setq conda-anaconda-home "/Users/fregeholy/opt/anaconda3")
+    (setq conda-env-home-directory "/Users/fregeholy/opt/anaconda3/envs")
+    :config
+    (conda-env-autoactivate-mode t))
+
+  (use-package company-anaconda
+    :ensure t
+    :config
+    (eval-after-load "company"
+      '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
+#+END_SRC      
+** emmet
+#+BEGIN_SRC emacs-lisp
+(use-package emmet-mode
+  :ensure t
+  :hook (sgml-mode html-mode css-mode)
+  :bind ("C-j" . emmet-expand-line)
+  )
+#+END_SRC
+** vue mode
+#+BEGIN_SRC emacs-lisp
+  (use-package vue-mode
+  :ensure t)
+
+  (use-package vue-html-mode
+    :ensure t)
+  
+#+END_SRC
+** web-mode
+#+BEGIN_SRC emacs-lisp
+
+  (use-package impatient-mode
+    :ensure t)
+  
+  (use-package web-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode)))
+
+
+  (defun my-web-mode-hook ()
+    "Hooks for Web mode."
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-enable-auto-pairing t)
+    (setq web-mode-enable-css-colorization t)
+    (setq web-mode-enable-block-face t)
+    (setq web-mode-engines-alist
+          '(("django" . "\\.html\\'")))
+    ;; (js2-mode)
+    (impatient-mode)
+    )
+
+  (add-hook 'web-mode-hook 'my-web-mode-hook)
+#+END_SRC
+** dart & flutter
+#+BEGIN_SRC emacs-lisp
+    (setq package-selected-packages 
+      '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+        ;; Optional packages
+        lsp-ui company hover))
+
+    (when (cl-find-if-not #'package-installed-p package-selected-packages)
+      (package-refresh-contents)
+      (mapc #'package-install package-selected-packages))
+
+    (add-hook 'dart-mode-hook 'lsp)
+
+    (setq gc-cons-threshold (* 100 1024 1024)
+          read-process-output-max (* 1024 1024))
+
+  ;; Assuming usage with dart-mode
+  (use-package dart-mode
+    :ensure t
+    ;; Optional
+    :hook (dart-mode . flutter-test-mode))
+
+  (use-package flutter
+    :after dart-mode
+    :bind (:map dart-mode-map
+                ("C-M-x" . #'flutter-run-or-hot-reload))
+    :custom
+    (flutter-sdk-path "~/Documents/Libraries/flutter/"))
+#+END_SRC
+* file modes
+** json-mode
+#+BEGIN_SRC emacs-lisp
+(use-package json-mode
+  :ensure t)
+#+END_SRC
+** yaml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :ensure t)
+#+END_SRC
+** csv-mode
+#+BEGIN_SRC emacs-lisp
+(use-package csv-mode
+  :ensure t)
+#+END_SRC
+** markdown mode
+#+BEGIN_SRC emacs-lisp
+;; (use-package markdown-mode
+;;   :ensure t
+;;   :mode ("README\\.md\\'" . gfm-mode)
+;;   :init (setq markdown-command "multimarkdown"))
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . gfm-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "pandoc")
+  :config
+  (setq visual-line-column 90)
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-enable-math t))
+
+(use-package pandoc-mode
+  :after org)
+
+#+END_SRC
+* Org relate settings
+** org indented mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook 'org-indent-mode)
+#+END_SRC
+** org bullet headings (org-superstar)
+#+BEGIN_SRC emacs-lisp
+    (use-package org-superstar
+      :ensure t
+      ;; :hook
+      ;; (org-mode . (lambda () (org-superstar-mode 1)))
+      )
+    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+    (setq org-superstar-headline-bullets-list '("🅐" "🅑" "🅒" "🅓"  "🅔"  "🅕"  "🅖"))
+    (setq org-superstar-special-todo-items t)
+    (setq org-superstar-todo-bullet-alist '(("TODO" . ?➽)
+                                            ("CURRENTLY" . ?⌛)
+                                            ("SOMEDAY" . ?⏰)
+                                            ("CANCELLED" . ?✘)
+                                            ("DONE" . ?✓)))
+    (setq org-superstar-item-bullet-alist
+          '((?* . ?•)
+            (?+ . ?➤)
+            (?- . ?•)))
+    (setq org-ellipsis " ▼ ")
+
+    ;; (load-file "~/.emacs.d/lisp/my-capture-template.el")
+  (with-eval-after-load 'org
+    (setq org-todo-keywords
+          '((sequence "TODO" "DOING" "BLOCKED" "REVIEW" "|" "DONE" "ARCHIVED"))))
+#+END_SRC
+** org babel preparation
+#+BEGIN_SRC emacs-lisp
+
+            ;; (use-package ob-prolog
+            ;; :ensure t)
+            ;; (setq org-babel-prolog-command "swipl")
+  (use-package ob-napkin
+    :ensure t
+    :after ob
+    )
+  (require 'ox-latex)
+
+  (with-eval-after-load "org"
+    (add-to-list 'load-path "/Users/fregeholy/.emacs.d/elpa/ob-html/")
+    (require 'ob-html)
+    (org-babel-html-enable-open-src-block-result-temporary)) ;;Enable C-c C-o on html code block
+
+  ;; (use-package dart-mode
+  ;;   :ensure t)
+
+  (use-package ob-dart
+    :ensure t)
+#+END_SRC
+
+** org-babel
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     ;; (prolog . t)
+     (gnuplot . t)
+     ;; (latex . t)
+     (dot . t)
+     (sql . t)     
+     (ein . t)
+     (html . t)
+     (dart . t)     
+     (org . t)
+     (plantuml . t)
+     ;;(ipython . t)
+     ;; (jupyter . t)
+     (python . t)))
+  (setq org-confirm-babel-evaluate nil)
+
+#+end_src
+
+** ox-reveal
+#+BEGIN_SRC emacs-lisp
+    (use-package ox-reveal
+    :ensure t)
+      ;; (setq org-reveal-root "file:////Users/holy/temp/reveal.js/js")
+  ;; (require 'ox-reveal)  
+
+#+END_SRC
+** ox-ipynb
+#+BEGIN_SRC emacs-lisp
+  ;;  (use-package ox-ipynb
+  ;;    :load-path "~/.emacs.d/lisp/ox-ipynb") ;Modify with your own path
+  (add-to-list 'load-path "/Users/fregeholy/.emacs.d/lisp/ox-ipynb")
+  (require 'ox-ipynb)
+
+  ;; (use-package ox-ipynb
+  ;;   :straight t
+  ;;   :elpaca (ox-ipynb :type git :host github :repo "jkitchin/ox-ipynb"))
+
+
+#+END_SRC
+
+** ox-hugo
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-hugo
+    :ensure t   ;Auto-install the package from Melpa
+    :pin melpa  ;`package-archives' should already have ("melpa" . "https://melpa.org/packages/")
+    :after ox
+    :config
+    (setq org-hugo-exporter-options
+          '((bold . "<strong>%s</strong>")
+            (italic . "<em>%s</em>")
+            (underline . "<u>%s</u>")
+            (verbatim . "<code>%s</code>")
+            (example-block . "<div class=\"example\">\n%s</div>")
+            (important-block . "<div class=\"important_holy\">\n%s</div>"))))
+
+  ;; (use-package citeproc
+  ;;   :ensure t)
+  ;; (use-package ox-hugo
+  ;;   :config
+    ;; (require 'oc-csl)
+    ;; (setq org-hugo-base-dir "~/MyProjects/holy2frege.github.io")
+    ;; (setq org-hugo--preprocess-buffer nil)
+    ;; (setq org-hugo-auto-set-lastmod t)
+    ;; (setq org-cite-csl-styles-dir "~/Zotero/styles")
+    ;; (setq org-cite-export-processors '((t csl)))
+    ;; :after ox)
+
+#+END_SRC
+
+** org2md (for blog)
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp/org2md/")
+(require 'org2md)
+#+END_SRC
+
+** org latex class
+#+BEGIN_SRC emacs-lisp
+  (setq latex-run-command "xelatex")
+  (add-to-list 'org-latex-classes
+            '("oblivoir"
+                                        "\\documentclass{oblivoir}"
+                                        ("\\section{%s}" . "\\section*{%s}")
+                                        ("\\subsection{%s}" . "\\subsection*{%s}")
+                                        ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                                        ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                                        ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+END_SRC
+* org presentations
+
+** org-beamer
+#+BEGIN_SRC emacs-lisp
+  (unless (boundp 'org-export-latex-classes)
+    (setq org-export-latex-classes nil))
+
+  (add-to-list 'org-export-latex-classes
+      ;; beamer class, for presentations
+      '("beamer"
+         "\\documentclass[11pt]{beamer}\n
+          \\mode<{{{beamermode}}}>\n
+          \\usetheme{{{{beamertheme}}}}\n
+          \\usecolortheme{{{{beamercolortheme}}}}\n
+          \\beamertemplateballitem\n
+          \\setbeameroption{show notes}
+          \\usepackage[utf8]{inputenc}\n
+          \\usepackage[T1]{fontenc}\n
+          \\usepackage{hyperref}\n
+          \\usepackage{color}
+          \\usepackage{listings}
+          \\lstset{numbers=none,language=[ISO]C++,tabsize=4,
+      frame=single,
+      basicstyle=\\small,
+      showspaces=false,showstringspaces=false,
+      showtabs=false,
+      keywordstyle=\\color{blue}\\bfseries,
+      commentstyle=\\color{red},
+      }\n
+          \\usepackage{verbatim}\n
+          \\institute{{{{beamerinstitute}}}}\n          
+           \\subject{{{{beamersubject}}}}\n"
+
+         ("\\section{%s}" . "\\section*{%s}")
+
+         ("\\begin{frame}[fragile]\\frametitle{%s}"
+           "\\end{frame}"
+           "\\begin{frame}[fragile]\\frametitle{%s}"
+           "\\end{frame}")))
+
+      ;; letter class, for formal letters
+  (add-to-list 'org-export-latex-classes
+    '("letter"
+     "\\documentclass[11pt]{letter}\n
+      \\usepackage[utf8]{inputenc}\n
+      \\usepackage[T1]{fontenc}\n
+      \\usepackage{color}"
+
+     ("\\section{%s}" . "\\section*{%s}")
+     ("\\subsection{%s}" . "\\subsection*{%s}")
+     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+END_SRC
+
+* Org-Roam relates
+** org-roam
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+    :after org
+    :init (setq org-roam-v2-ack t) ;; Acknowledge V2 upgrade
+    :custom
+    ;; (org-roam-directory "/Users/holy/Dropbox/org/RoamNotes/") ; replace with your path
+    (org-roam-directory "~/Documents/Blogs/holy-brain/org/") ; replace with your path
+    (org-roam-dailies-directory "journal/")     
+    (org-roam-capture-templates
+     '(("d" "default" plain
+        "%?"
+        :target (file+head "${slug}.org"
+                        "#+title: ${title}\n")
+        ;; :if-new (file+head "Gtd/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+        :unnarrowed t)
+       ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+        :unnarrowed t)
+
+       ("t" "todo list" plain
+        "%?"
+        :target (file+head "Gtd/${slug}.org"
+                        "#+title: ${title}\n")
+        :unnarrowed t)))
+    :bind (("C-c r l" . org-roam-buffer-toggle)
+           ("C-c r i" . org-roam-node-insert)           
+           ("C-c r f" . org-roam-node-find)
+           :map org-mode-map
+           ("C-M-i" . completion-at-point)
+           :map org-roam-dailies-map
+           ("Y" . org-roam-dailies-capture-yesterday)
+           ("T" . org-roam-dailies-capture-tomorrow))
+    :bind-keymap
+    ("C-c r d" . org-roam-dailies-map)
+    :config
+    (require 'org-roam-dailies)
+    (org-roam-db-autosync-mode)
+    (org-roam-setup))
+
+    (setq org-roam-completion-system 'ivy)
+#+END_SRC
+** org-roam-ui
+#+BEGIN_SRC emacs-lisp
+(use-package org-roam-ui
+  :after org-roam
+  :hook (after-init . org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start nil))
+#+END_SRC
+** org-roam-timestamps (for blog)
+#+BEGIN_SRC emacs-lisp
+(use-package org-roam-timestamps
+  :after org-roam
+  :config
+  (org-roam-timestamps-mode))
+#+END_SRC
+** deft
+#+BEGIN_SRC emacs-lisp
+  (use-package deft
+    :ensure t
+    :bind ("C-c d" . deft)
+    :commands (deft)
+    :config (setq deft-directory "~/Documents/Blogs/holy-brain/org/"
+                  deft-extensions '("md" "org")
+                  deft-use-filename-as-title t
+                  )
+    )
+#+END_SRC
+* GTD
+** todo 파일 바로 보게 하는 함수(made it by myself)
+#+BEGIN_SRC emacs-lisp
+  ;; (defun show-todo()
+  ;;   (interactive)
+  ;;   (find-file "/Users/fregeholy/Dropbox/org/RoamNotes/Gtd/"))
+
+  (defun show-mainblog()
+    (interactive)
+      (find-file "/Users/fregeholy/Documents/Blogs/main-blog/"))
+
+  (defun show-braindump()
+    (interactive)
+    (find-file "/Users/fregeholy/Documents/Blogs/holy-brain/"))
+
+  (global-set-key (kbd "C-c r t") 'show-todo)
+  (global-set-key (kbd "C-c r a") 'show-mainblog)
+  (global-set-key (kbd "C-c r b") 'show-braindump)  
+#+END_SRC
+* tex and pdf
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+* My Custom settings
+** holy braindump
+#+BEGIN_SRC emacs-lisp
+   (defcustom org-hugo-default-section-directory "posts"
+   "Default directory for Hugo sections.
+  This is used when none is specified in the `EXPORT_FILE_NAME` property."
+   :group 'ox-hugo
+   :type 'string)
+
+   (defun holy/publish_md (file)
+     (setq file1 (replace-regexp-in-string "'" "" file))  
+     (with-current-buffer (find-file-noselect file1)
+       (setq org-hugo-base-dir "..")
+         (org-hugo-export-wim-to-md :all-subtree nil nil nil )))
+
+  (defun my-project-workflow ()
+  "My custom workflow for the project."
+  (interactive)
+  (let ((default-directory "~/Documents/Blogs/holy-brain/"))
+    (progn
+      (compile "make")
+      (compile "hugo -D"))))
+#+END_SRC
+** main blog processing
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-publish)
+  (setq org-publish-project-alist
+        '(
+          ("my-main-blog"
+           :base-directory "~/Documents/Blogs/main-blog/org/"
+           :base-extension "org"
+           :publishing-directory "~/Documents/Blogs/main-blog/public/"
+           :publishing-function org-html-publish-to-html
+           :recursive t
+           :html-head "<link rel=\"stylesheet\" href=\"./css/style.css\" type=\"text/css\"/>
+                       <link rel=\"shortcut icon\" href=\"./img/favicon.ico\" type=\"image/x-icon\">
+                       <link rel=\"icon\" href=\"./img/favicon.ico\" type=\"image/x-icon\">"    
+           :html-head-extra "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0\" />"
+           :section-numbers nil
+           :section-numbers nil
+           :with-toc nil
+           :html-head-include-default-style nil
+           :html-postamble nil
+           ;; :headline-levels 3
+           ;; :html-tag-class-prefix "my-org-"
+           :html-postamble "<div class=\"footer\">This project is maintained and Copyright © holyfrege 
+                           2024. All rights reserved. <br> Hosted on GitHub Pages</div>"
+           :html-indent t
+           :html-doctype "html5"
+           :html-html5-fancy t
+           )
+          ("my-main-blog-css"
+            :base-directory "~/Documents/Blogs/main-blog/css/"
+            :base-extension "css\\|scss"
+            :publishing-directory "~/holy2frege_projects/main-blog/public/css/"
+            :recursive t
+            :publishing-function org-publish-attachment
+           )
+          ("my-main-blog-img"
+            :base-directory "~/Documents/Blogs/main-blog/img/"
+            :base-extension "png\\|jpg\\|ico\\|mov\\|mp4"
+            :publishing-directory "~/Documents/Blogs/main-blog/public/img/"
+            :recursive t
+            :publishing-function org-publish-attachment
+           )          
+          ))
+
+    (defun my-org-export-custom-function ()
+      "Custom function to be executed when the new menu is selected"
+      (message "Hello, holy world!"))
+
+    (defun my-org-export-add-custom-menu ()
+      "Add custom menu to org-export-dispatch"
+      (interactive)
+      (let ((menu (make-sparse-keymap "Custom")))
+        (define-key menu "z" 'my-org-export-custom-function)
+        (define-key org-export-dispatch-menu-map "Z" menu)))
+
+#+END_SRC
+** tistory
+#+BEGIN_SRC emacs-lisp
+    (defun org-export-to-tistory ()
+      (interactive)
+      ;; 여기에 Tistory로 게시하는 코드 작성
+      (message "Tistory로 발행되었습니다."))
+
+  ;; (defun my-org-export-hook ()
+  ;; (easy-menu-add-item org-export-dispatch-menu
+  ;;                     '("e" "E-Export to different formats...")
+  ;;                     ["Tistory" org-export-to-tistory :help "Export to Tistory"]
+  ;;                     5))
+  ;; (add-hook 'org-mode-hook 'my-org-export-hook)
+
+
+#+END_SRC
+* last
+#+BEGIN_SRC emacs-lisp
+(message "******** Emacs Initialized End *********")
+#+END_SRC

@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: dita
+# key: dita
+# --
+#+begin_src ditaa :file ./helloworld.png
++----------------+
+| Hello World!!! |
+|                |
++----------------+
+#+end_src

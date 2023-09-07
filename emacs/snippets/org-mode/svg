@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: svg
+# key: svg
+# --
+
+#+BEGIN_EXPORT html
+<style>
+.style_rect2 {
+fill: magenta;
+stroke: gray;
+stroke-width:5; 
+}
+</style>
+
+<svg width = "400px" height= "300px">
+
+<rect x ="200" y ="10" width = "200" height = "200" rx = "10" ry = "10" class = "style_rect2" />
+
+</svg>
+#+END_EXPORT
+

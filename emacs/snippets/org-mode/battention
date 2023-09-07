@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: battention
+# key: battention
+# --
+ #+begin_attention
+ $1
+ #+end_attention

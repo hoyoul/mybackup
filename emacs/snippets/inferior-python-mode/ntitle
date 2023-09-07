@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: title
+# key: ntitle
+# --
+#+TITLE:$2
+#+AUTHOR:$1

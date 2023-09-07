@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: plantuml2
+# key: plantuml2
+# --
+#+BEGIN_SRC plantuml :file ./test.png
+[*] --> State1
+State1 --> [*]
+State1 : this is a string
+State1 : this is another string
+
+State1 -> State2
+State2 --> [*]
+#+END_SRC

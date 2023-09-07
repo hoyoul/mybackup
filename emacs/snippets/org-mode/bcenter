@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: bcenter
+# key: bcenter
+# --
+ #+begin_center
+ $1
+ #+end_center

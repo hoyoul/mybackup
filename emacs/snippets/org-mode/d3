@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: d3
+# key: d3
+# --
+#+BEGIN_export html
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<p> SVG Test </p>
+
+<svg width= ="500px" height= =="500px"> 
+     <circle cx="200" cy="100" r="50" />
+</svg>
+
+<script>
+d3.select("circle").attr("fill", "red");
+</script>
+
+
+#+END_export

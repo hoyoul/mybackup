@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: bright
+# key: bright
+# --
+ #+begin_right
+ $1
+ #+end_right

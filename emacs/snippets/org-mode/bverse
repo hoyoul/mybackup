@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: bverse
+# key: bverse
+# --
+ #+begin_verse
+ $1
+ #+end_verse

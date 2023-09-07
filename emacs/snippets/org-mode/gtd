@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: gtd
+# key: gtd
+# --
+
+# ------------------------------------------------------------------------------
+#+TITLE:     Get Things Done with Emacs
+#+SUBTITLE:  Nicolas P. Rougier - September 2020
+#+AUTHOR:    Nicolas P. Rougier
+#+EMAIL:     Nicolas.Rougier@inria.fr
+#+LANGUAGE:  en
+#+STARTUP:   content showstars indent inlineimages hideblocks
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="GTD.css" />
+#+OPTIONS:   toc:2 html-scripts:nil num:nil html-postamble:nil html-style:nil ^:nil
+# ------------------------------------------------------------------------------

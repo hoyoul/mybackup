@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: gtd-template
+# key: gtd-template
+# --
+
+#+STARTUP: content showstars indent
+#+FILETAGS: index

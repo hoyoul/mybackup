@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: simple-readtheorg
+# key: simple-readtheorg
+# --
+#+TITLE: $1
+#+AUTHOR: Holy Frege
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
